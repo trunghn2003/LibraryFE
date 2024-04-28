@@ -15,7 +15,7 @@ function ManageGenres() {
       setGenres(genresData);
     };
     fetchApi();
-  }, [getGenres]);
+  }, [genres]);
 
   const handleDelete = async (genreId) => {
     Swal.fire({
