@@ -1,0 +1,30 @@
+// layout-default.scss
+.layout-default {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; // Ensures the layout covers at least the full viewport height
+  
+    &__header {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      z-index: 1000; // Keeps header on top
+    }
+  
+    &__main {
+      flex: 1; // Takes up the remaining space
+      padding-top: 60px; // Adjust based on your header's actual height
+      width: 100%;
+      overflow: hidden;
+      overflow-y: auto; // Adds scroll to the main content if it exceeds viewport height
+    }
+  
+    &__footer {
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      z-index: 1000; // Keeps footer at the bottom
+      background-color: red;
+    }
+  }
+  

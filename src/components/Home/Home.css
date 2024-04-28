@@ -1,0 +1,21 @@
+.custom-carousel .carousel-item img {
+  height: 100%; /* Full height of the carousel item */
+  object-fit: cover; /* Cover ensures the image fills the area properly without distorting */
+  width: 100%;
+}
+
+.custom-carousel {
+  height: 100%; /* Ensures the carousel takes up all the space allotted to it in the flex container */
+}
+.custom-carousel .carousel-caption {
+  bottom: 20%; /* Adjust this value to move the caption up */
+  background-color: rgba(0, 0, 0, 0.5); /* Optional: Improves text readability */
+  padding: 10px;
+  border-radius: 10px;
+}
+.custom-carousel .carousel-caption {
+  margin-bottom: -50px; /* Pulls the caption up by 50px */
+  background-color: rgba(0, 0, 0, 0.5); /* Optional: Enhances readability */
+  padding: 10px;
+  border-radius: 10px;
+}

@@ -1,0 +1,61 @@
+/* General Layout */
+.book-container {
+  padding: 20px;
+}
+
+.sidebar-authors {
+  background-color: #f8f8f8;
+}
+
+.sidebar-title {
+  padding: 10px;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  color: orange;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.author-list .author-item,
+.genre-list .genre-item {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.author-list .author-item:last-child,
+.genre-list .genre-item:last-child {
+  border-bottom: none;
+}
+
+.author-list .author-item:hover,
+.genre-list .genre-item:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+/* Featured Books Styles */
+.featured-books .book-col {
+  display: flex;
+  justify-content: center;
+}
+
+.featured-books .book-card {
+  width: 100%;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.featured-books .book-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.featured-books .book-image {
+  height: 200px;
+  object-fit: cover;
+}
+
+.featured-books .book-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
