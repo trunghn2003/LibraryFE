@@ -21,10 +21,10 @@ if (userData && userData.role === "admin") {
 }
 
 // In thông tin người dùng hoặc một chi tiết cụ thể để kiểm tra
-console.log(userData);
-if (userData) {
-    console.log("Role:", userData.role); // Kiểm tra role của người dùng, nếu có dữ liệu
-}
+// console.log(userData);
+// if (userData) {
+//     console.log("Role:", userData.role); // Kiểm tra role của người dùng, nếu có dữ liệu
+// }
 
 
   const dispatch = useDispatch();
