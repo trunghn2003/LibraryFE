@@ -24,6 +24,22 @@ export const getBooks = async () => {
   const result = await get("Books");
   return result;
 };
+export const createBook = async (data) => {
+  const result = await post(data, "Books");
+  return result;
+};
+
+export const editBook = async (data, id) => {
+  const result = await put(`Books/${id}`, data);
+  console.log(data)
+  console.log(id);
+  return result;
+};
+
+export const deleteBook = async (id) => {
+  const result = await deleteRequest(`Books/${id}`);
+  return result;
+};
 
 // thể loại
 export const getGenres = async () => {
