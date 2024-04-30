@@ -62,3 +62,66 @@ export const deleteGenre = async (id) => {
   const result = await deleteRequest(`Genres/${id}`);
   return result;
 };
+
+// Tạo một phiếu mượn mới
+export const createBorrowing = async (borrowingData) => {
+  const result = await post(borrowingData, "Borrowings");
+  return result;
+};
+
+// Lấy thông tin chi tiết của một phiếu mượn
+export const getBorrowing = async (id) => {
+  const result = await get(`Borrowings/${id}`);
+  return result;
+};
+
+// Cập nhật thông tin phiếu mượn
+export const updateBorrowing = async (id, borrowingData) => {
+  const result = await put(`Borrowings/${id}`, borrowingData);
+  return result;
+};
+
+// Xóa một phiếu mượn
+export const deleteBorrowing = async (id) => {
+  const result = await deleteRequest(`Borrowings/${id}`);
+  return result;
+};
+// Tạo một bản ghi BorrowedBook mới (thêm sách vào một phiếu mượn)
+export const createBorrowedBook = async (borrowedBookData) => {
+  const result = await post(borrowedBookData, "BorrowedBooks");
+  return result;
+};
+
+// Lấy thông tin chi tiết của BorrowedBook bằng ID
+export const getBorrowedBook = async (id) => {
+  const result = await get(`BorrowedBooks/${id}`);
+  return result;
+};
+
+// Cập nhật thông tin của một bản ghi BorrowedBook
+export const updateBorrowedBook = async (id, borrowedBookData) => {
+  const result = await put(`BorrowedBooks/${id}`, borrowedBookData);
+  return result;
+};
+
+// Xóa một bản ghi BorrowedBook
+export const deleteBorrowedBook = async (id) => {
+  const result = await deleteRequest(`BorrowedBooks/${id}`);
+  return result;
+};
+
+// Lấy tất cả BorrowedBooks cho một Borrowing cụ thể
+export const getBorrowedBooksByBorrowingId = async (borrowingId) => {
+  const result = await get(`BorrowedBooks/Borrowing/${borrowingId}`);
+  return result;
+};
+
+export const getBorrowingsByUserId = async (id) => {
+  const result = await get(`Borrowings/User/${id}`);
+  return result;
+};
+export const returnBook = async (borrowingId,data = null) => {
+  const result = await put(`Borrowings/${borrowingId}/return`);
+
+  return result;
+};

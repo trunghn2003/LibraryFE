@@ -1,33 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, ListGroup, Card, Button } from "react-bootstrap";
 import { getAuthors, getBooks, getGenres } from "../../services/bookService";
-import "./book.css";  // Đảm bảo file CSS được import đúng
+import "./book.css";  // Ensure the CSS file is correctly imported
 
 function Book() {
   const [books, setBooks] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [genres, setGenres] = useState([]);
 
+  // Hàm thêm sách vào giỏ hàng, sử dụng sessionStorage
+  const addToCart = (book) => {
+    let currentCart = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+    currentCart.push(book);
+    sessionStorage.setItem("cartItems", JSON.stringify(currentCart));
+  };
+
   useEffect(() => {
     const fetchApi = async () => {
-      const booksData = await getBooks();
-      const authorsData = await getAuthors();
-      const genresData = await getGenres();
+      try {
+        const booksData = await getBooks();
+        const authorsData = await getAuthors();
+        const genresData = await getGenres();
 
-      // Tạo map để tra cứu nhanh tác giả và thể loại
-      const authorMap = new Map(authorsData.map(author => [author.authorID, author.authorName]));
-      const genreMap = new Map(genresData.map(genre => [genre.genreID, genre.genreName]));
+        const authorMap = new Map(authorsData.map(author => [author.authorID, author.authorName]));
+        const genreMap = new Map(genresData.map(genre => [genre.genreID, genre.genreName]));
 
-      // Liên kết thông tin tác giả và thể loại vào mỗi quyển sách
-      const enrichedBooks = booksData.map(book => ({
-        ...book,
-        authorName: authorMap.get(book.authorID),
-        genreName: genreMap.get(book.genreID)
-      }));
+        const enrichedBooks = booksData.map(book => ({
+          ...book,
+          authorName: authorMap.get(book.authorID),
+          genreName: genreMap.get(book.genreID)
+        }));
 
-      setBooks(enrichedBooks);
-      setAuthors(authorsData);
-      setGenres(genresData);
+        setBooks(enrichedBooks);
+        setAuthors(authorsData);
+        setGenres(genresData);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        // Optionally handle the error by showing a user-friendly message or UI element
+      }
     };
 
     fetchApi();
@@ -36,39 +46,40 @@ function Book() {
   return (
     <Container fluid className="book-container">
       <Row>
-        <Col md={2} className="sidebar-authors">
+        <Col md={3} className="sidebar-authors">
           <h4 className="sidebar-title">Authors</h4>
-          <ListGroup className="author-list">
+          <ListGroup>
             {authors.map(author => (
-              <ListGroup.Item action key={author.authorID} className="author-item">
+              <ListGroup.Item action key={author.authorID}>
                 {author.authorName}
               </ListGroup.Item>
             ))}
           </ListGroup>
           <h4 className="sidebar-title">Genres</h4>
-          <ListGroup className="genre-list">
+          <ListGroup>
             {genres.map(genre => (
-              <ListGroup.Item action key={genre.genreID} className="genre-item">
+              <ListGroup.Item action key={genre.genreID}>
                 {genre.genreName}
               </ListGroup.Item>
             ))}
           </ListGroup>
         </Col>
 
-        <Col md={10} className="featured-books">
+        <Col md={9} className="featured-books">
           <h2>Featured Books</h2>
-          <Row xs={1} md={2} lg={4} className="g-4">
+          <Row xs={1} md={2} lg={3} className="g-4">
             {books.map(book => (
-              <Col key={book.bookID} className="book-col">
-                <Card className="book-card">
+              <Col key={book.bookID}>
+                <Card>
                   <Card.Img
                     variant="top"
-                    src={book.image || "https://via.placeholder.com/150x200?text=Book+Cover"}
+                    src={book.image || "https://via.placeholder.com/150"}
+                    alt="Book Cover"
                     className="book-image"
                   />
-                  <Card.Body className="book-body">
-                    <Card.Title className="book-title">{book.title}</Card.Title>
-                    <Card.Text className="book-text">
+                  <Card.Body>
+                    <Card.Title>{book.title}</Card.Title>
+                    <Card.Text>
                       Author: {book.authorName || "Unknown"}
                       <br />
                       Genre: {book.genreName || "Unknown"}
@@ -77,7 +88,7 @@ function Book() {
                       <br />
                       Remaining: {book.remainingQuantity} / {book.totalQuantity}
                     </Card.Text>
-                    <Button variant="primary">Add to cart</Button>
+                    <Button variant="primary" onClick={() => addToCart(book)}>Add to Cart</Button>
                   </Card.Body>
                 </Card>
               </Col>

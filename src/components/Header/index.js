@@ -50,6 +50,9 @@ if (userData && userData.role === "admin") {
                 <Button onClick={handleLogout} style={{ marginRight: "10px" }}>
                   Logout
                 </Button>
+            <Nav.Link href="/cart">Carts</Nav.Link>
+            <Nav.Link href="/borrowed-books">Sách đã mượn</Nav.Link>
+
                 {isAdmin && (
                   <>
                     <Nav.Link href="/manage-books">Manage Books</Nav.Link>

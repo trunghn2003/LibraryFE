@@ -4,22 +4,31 @@ import { Routes, Route } from "react-router-dom";
 import Book from "./components/Book";
 import Login from "./components/Login";
 import ManageBooks from "./components/ManageBooks";
+import Cart from "./components/Cart";
 import ManageAuthors from "./components/ManageAuthors";
 import ManageGenres from "./components/ManagerGenres";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import BorrowedBooks from "./components/BorrowedBook";
 // import {Button} from 'react-bootstrap'
-const App = () => (
-  <>
-    <Routes>
-      <Route path="/" element={<LayoutDefault />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/book" element={<Book />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/manage-books" element={<ManageBooks />} />
-        <Route path="/manage-authors" element={<ManageAuthors />} />
-        <Route path="/manage-genres" element={<ManageGenres />} />
-      </Route>
-    </Routes>
-  </>
-);
+function App() {
+  
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<LayoutDefault />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/book" element={<Book/>} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/manage-books" element={<ManageBooks />} />
+          <Route path="/manage-authors" element={<ManageAuthors />} />
+          <Route path="/manage-genres" element={<ManageGenres />} />
+          <Route path="/borrowed-books" element={<BorrowedBooks />} />
+        </Route>
+      </Routes>
+    </>
+  );
+}
 
 export default App;
