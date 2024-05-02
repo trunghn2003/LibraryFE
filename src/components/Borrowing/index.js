@@ -1,42 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Container, Button } from 'react-bootstrap';
-import { getBorrowingsByUserId, getBorrowedBooksByBorrowingId, getBooks, ReturnedAwaitingApproval } from '../../services/bookService';
+import { getBorrowedBooksByBorrowingId, getBooks, getBorrowings, confirmBorrowBook, confirmReturnBook } from '../../services/bookService';
 import { format, parseISO } from 'date-fns';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
 
-function BorrowedBooks() {
+function Borrowings() {
     const [borrowings, setBorrowings] = useState([]);
     const [books, setBooks] = useState([]);
-    const navigate = useNavigate();
+
     const user = JSON.parse(sessionStorage.getItem("user"));
 
     const formatDate = (dateString) => {
         const date = parseISO(dateString);
         return format(date, 'PPP'); // 'PPP' for format like "May 13, 2024"
     };
-    
-    
+
     useEffect(() => {
-        if(!user){
-            navigate("/login")
-        }
         const fetchBorrowings = async () => {
             const bookDetails = await getBooks();
             setBooks(bookDetails);
-            let borrowingsData = []
-            if(user){
-
-                 borrowingsData = await getBorrowingsByUserId(user.userID);
-            }
+            let borrowingsData = await getBorrowings();
             borrowingsData = borrowingsData.sort((a, b) => {
-                // Sort by status, "Đã trả" should come after "Chưa trả"
-                if (a.status === 'Đã trả' && b.status !== 'Đã trả') {
-                    return 1;
-                } else if (a.status !== 'Đã trả' && b.status === 'Đã trả') {
-                    return -1;
-                }
-                return 0;
+                return -1;
             });
             // Initialize borrowedBooks as an empty array
             const borrowingsWithBooks = await Promise.all(borrowingsData.map(async (borrowing) => ({
@@ -52,18 +37,24 @@ function BorrowedBooks() {
         return book ? book.title : 'Unknown Book';
     };
 
-    const handleReturn = async (borrowingId) => {
+    const handleConfirm = async (borrowingId) => {
         try {
-            await ReturnedAwaitingApproval(borrowingId);
-            Swal.fire('Success', 'Book returned successfully', 'success');
+            await confirmBorrowBook(borrowingId);
+            Swal.fire('Thành công', 'Đã phê duyệt mượn sách', 'success');
+        } catch (error) {
+            Swal.fire('Error', 'Failed to return the book', 'error');
+        }
+    };
+    const handleConfirmReturn = async (borrowingId) => {
+        try {
+            await confirmReturnBook(borrowingId);
+            Swal.fire('Thành công', 'Đã phê duyệt trả sách', 'success');
         } catch (error) {
             Swal.fire('Error', 'Failed to return the book', 'error');
         }
     };
 
     return (
-        
-       
         <Container className="mt-4">
             <h2>Borrowed Books</h2>
             <Table striped bordered hover>
@@ -73,7 +64,8 @@ function BorrowedBooks() {
                         <th>Ngày mượn</th>
                         <th>Ngày trả</th>
                         <th>Trạng thái</th>
-                        <th>Trả sách</th>
+                        <th>Phê duyệt mượn</th>
+                        <th>Phê duyệt trả</th>
                         <th>Borrowed Books</th>
                     </tr>
                 </thead>
@@ -82,9 +74,10 @@ function BorrowedBooks() {
                         <tr key={index}>
                             <td>{borrowing.borrowingID}</td>
                             <td>{formatDate(borrowing.borrowDate)}</td>
-                            <td>{borrowing.returnDate ? formatDate(borrowing.returnDate) : 'Chưa trả'}</td>
+                            <td>{borrowing.returnDate ? formatDate(borrowing.returnDate) : 'Đang chờ phê duyệt'}</td>
                             <td>{borrowing.status}</td>
-                            <td><Button onClick={() => handleReturn(borrowing.borrowingID)} disabled={borrowing.status === 'Đã trả' || borrowing.status === 'Đang chờ phê duyệt trả'}>Trả sách</Button></td>
+                            <td><Button onClick={() => handleConfirm(borrowing.borrowingID)} disabled={borrowing.status !== 'Đang chờ phê duyệt'}>Phê duyệt mượn</Button></td>
+                            <td><Button onClick={() => handleConfirmReturn(borrowing.borrowingID)} disabled={borrowing.status !== 'Đang chờ phê duyệt trả'}>Phê duyệt trả</Button></td>
                             <td>
                                 <ul>
                                     {borrowing.borrowedBooks?.map(bb => (
@@ -104,4 +97,4 @@ function BorrowedBooks() {
     );
 }
 
-export default BorrowedBooks;
+export default Borrowings;

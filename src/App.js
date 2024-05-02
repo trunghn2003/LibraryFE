@@ -10,6 +10,7 @@ import ManageGenres from "./components/ManagerGenres";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import BorrowedBooks from "./components/BorrowedBook";
+import Borrowings from "./components/Borrowing";
 // import {Button} from 'react-bootstrap'
 function App() {
   
@@ -25,6 +26,7 @@ function App() {
           <Route path="/manage-authors" element={<ManageAuthors />} />
           <Route path="/manage-genres" element={<ManageGenres />} />
           <Route path="/borrowed-books" element={<BorrowedBooks />} />
+          <Route path="borrowing" element={<Borrowings />} />
         </Route>
       </Routes>
     </>

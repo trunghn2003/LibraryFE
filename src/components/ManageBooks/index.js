@@ -9,8 +9,11 @@ import {
 } from "../../services/bookService";
 import { Table, Button, Modal, Form, Container } from "react-bootstrap";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 function ManageBooks() {
+  const user = JSON.parse(sessionStorage.getItem("user"))
+  const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [genres, setGenres] = useState([]);
@@ -27,6 +30,16 @@ function ManageBooks() {
   });
 
   useEffect(() => {
+    if(!user) {
+      navigate("/login")
+      console.log(user.role);
+      
+    }
+    if(user.role !== "admin"){
+      navigate("/")
+    }
+    // console.log(user.role);
+    
     const fetchBooks = async () => {
       const booksData = await getBooks();
       const authorsData = await getAuthors();

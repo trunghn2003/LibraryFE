@@ -74,6 +74,10 @@ export const getBorrowing = async (id) => {
   const result = await get(`Borrowings/${id}`);
   return result;
 };
+export const getBorrowings = async (id) => {
+  const result = await get(`Borrowings`);
+  return result;
+};
 
 // Cập nhật thông tin phiếu mượn
 export const updateBorrowing = async (id, borrowingData) => {
@@ -120,8 +124,18 @@ export const getBorrowingsByUserId = async (id) => {
   const result = await get(`Borrowings/User/${id}`);
   return result;
 };
-export const returnBook = async (borrowingId,data = null) => {
+export const ReturnedAwaitingApproval = async (borrowingId,data = null) => {
+  const result = await put(`Borrowings/${borrowingId}/ReturnedAwaitingApproval`);
+
+  return result;
+};
+export const confirmReturnBook = async (borrowingId,data = null) => {
   const result = await put(`Borrowings/${borrowingId}/return`);
+
+  return result;
+};
+export const confirmBorrowBook = async (borrowingId,data = null) => {
+  const result = await put(`Borrowings/${borrowingId}/ConfirmBorrowing`);
 
   return result;
 };

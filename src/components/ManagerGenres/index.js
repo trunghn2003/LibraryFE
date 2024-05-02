@@ -2,14 +2,25 @@ import React, { useEffect, useState } from "react";
 import { Table, Button, Modal, Form, Container } from "react-bootstrap";
 import Swal from 'sweetalert2';
 import { createGenre, deleteGenre, editGenre, getGenres } from "../../services/bookService";
+import { useNavigate } from "react-router-dom";
 
 function ManageGenres() {
+  const user = JSON.parse(sessionStorage.getItem("user"))
+  const navigate = useNavigate();
   const [genres, setGenres] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentGenre, setCurrentGenre] = useState({ genreID: "", genreName: "" });
 
   useEffect(() => {
+    if(!user) {
+      navigate("/login")
+      console.log(user.role);
+      
+    }
+    if(user.role !== "admin"){
+      navigate("/")
+    }
     const fetchApi = async () => {
       const genresData = await getGenres();
       setGenres(genresData);

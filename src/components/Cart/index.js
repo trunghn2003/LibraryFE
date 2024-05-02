@@ -13,6 +13,10 @@ const Cart = () => {
     const user = JSON.parse(sessionStorage.getItem("user"))
     // Tải cartItems từ sessionStorage khi component được mount
     useEffect(() => {
+        if(!user){
+            console.log("hello")
+            navigate("/login")
+        }
         const items = sessionStorage.getItem("cartItems");
         if (items) {
             setCartItems(JSON.parse(items));  // Chỉ phân tích JSON nếu có dữ liệu
@@ -34,7 +38,7 @@ const Cart = () => {
             UserID: user.userID, // Giả sử ID người dùng đã đăng nhập
             BorrowDate: new Date().toISOString().split('T')[0], // Ngày hiện tại, format YYYY-MM-DD
             ReturnDate: new Date(new Date().setDate(new Date().getDate() + 14)).toISOString().split('T')[0], // Ngày trả, giả sử là 14 ngày sau ngày mượn
-            Status: "Đang mượn" // Trạng thái ban đầu của phiếu mượn
+            Status: "Đang chờ phê duyệt" // Trạng thái ban đầu của phiếu mượn
         };
     
        

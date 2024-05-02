@@ -1,0 +1,17 @@
+.avatar-dropdown {
+    background-color: transparent !important; /* Remove background */
+    border: none !important; /* Remove border */
+    box-shadow: none !important; /* Remove shadow */
+    padding: 0 !important; /* Remove padding */
+  }
+  
+  .avatar-dropdown .dropdown-toggle::after {
+    display: none; /* Remove the default caret icon */
+  }
+  
+  .avatar-img {
+    width: 40px; /* Adjust size as needed */
+    height: 40px;
+    object-fit: cover;
+  }
+  
