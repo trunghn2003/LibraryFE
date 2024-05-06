@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, ListGroup, Card, Button } from "react-bootstrap";
-import { getAuthors, getBooks, getGenres } from "../../services/bookService";
+import { addBookToCart, getAuthors, getBooks, getGenres } from "../../services/bookService";
 import "./book.css";  // Ensure the CSS file is correctly imported
-
+import { toast, ToastContainer } from 'react-toastify';
+  import "react-toastify/dist/ReactToastify.css";
 function Book() {
   const [books, setBooks] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [genres, setGenres] = useState([]);
 
   // Hàm thêm sách vào giỏ hàng, sử dụng sessionStorage
-  const addToCart = (book) => {
+  const addToCart = async (book) => {
+    toast.success("Sách đã được thêm vào giỏ hàng", {
+      position: "top-right"
+    });
+
     let currentCart = JSON.parse(sessionStorage.getItem("cartItems")) || [];
     currentCart.push(book);
+    console.log(book.bookID)
+    addBookToCart(book.bookID)
     sessionStorage.setItem("cartItems", JSON.stringify(currentCart));
   };
 
@@ -41,7 +48,7 @@ function Book() {
     };
 
     fetchApi();
-  }, []);
+  }, [books]);
 
   return (
     <Container fluid className="book-container">
@@ -88,7 +95,7 @@ function Book() {
                       <br />
                       Remaining: {book.remainingQuantity} / {book.totalQuantity}
                     </Card.Text>
-                    <Button variant="primary" onClick={() => addToCart(book)}>Add to Cart</Button>
+                    <Button variant="primary" onClick={() => addToCart(book)} disabled = {book.remainingQuantity === 0}>Add to Cart</Button>
                   </Card.Body>
                 </Card>
               </Col>
@@ -96,7 +103,9 @@ function Book() {
           </Row>
         </Col>
       </Row>
+      <ToastContainer />
     </Container>
+
   );
 }
 

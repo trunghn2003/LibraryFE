@@ -15,6 +15,7 @@ function Borrowings() {
         return format(date, 'PPP'); // 'PPP' for format like "May 13, 2024"
     };
 
+
     useEffect(() => {
         const fetchBorrowings = async () => {
             const bookDetails = await getBooks();
@@ -32,6 +33,7 @@ function Borrowings() {
         };
         fetchBorrowings();
     }, [borrowings]);
+    console.log(borrowings);
     const getBookName = (bookId) => {
         const book = books.find(b => b.bookID === bookId);
         return book ? book.title : 'Unknown Book';

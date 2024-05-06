@@ -40,6 +40,18 @@ export const deleteBook = async (id) => {
   const result = await deleteRequest(`Books/${id}`);
   return result;
 };
+// cap nhat khi book duoc them vao cart
+export const addBookToCart = async (id, data = null) => {
+  const result = await put(`Books/AddToCart/${id}`, data);
+  return result;
+};
+
+// cap nhat khi book xoa khoi cart
+export const RemoveBookFromCart = async (id, data = null) => {
+  const result = await put(`Books/RemoveFromCart/${id}`, data);
+  return result;
+};
+
 
 // thể loại
 export const getGenres = async () => {

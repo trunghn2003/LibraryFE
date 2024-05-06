@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { ListGroup, Button, Container } from 'react-bootstrap';
-import { createBorrowedBook, createBorrowing } from '../../services/bookService';
+import { RemoveBookFromCart, createBorrowedBook, createBorrowing } from '../../services/bookService';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,7 +24,8 @@ const Cart = () => {
     }, []);
 
     // Hàm xóa mục khỏi giỏ hàng
-    const removeFromCart = (index) => {
+    const removeFromCart = (index, item) => {
+        RemoveBookFromCart(item.bookID)
         const newCartItems = cartItems.filter((item, idx) => idx !== index);
         setCartItems(newCartItems);  // Cập nhật state
         sessionStorage.setItem("cartItems", JSON.stringify(newCartItems));  // Cập nhật sessionStorage
@@ -65,7 +66,7 @@ const Cart = () => {
                     cartItems.map((item, index) => (
                         <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
                             {item.title} - {item.authorName}
-                            <Button variant="danger" onClick={() => removeFromCart(index)}>Remove</Button>
+                            <Button variant="danger" onClick={() => removeFromCart(index,item)}>Remove</Button>
                         </ListGroup.Item>
                     ))
                 ) : (
