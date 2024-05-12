@@ -8,6 +8,7 @@ function Book() {
   const [books, setBooks] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [genres, setGenres] = useState([]);
+  const [filteredBooks, setFilteredBooks] = useState([]);
 
   // Hàm thêm sách vào giỏ hàng, sử dụng sessionStorage
   const addToCart = async (book) => {
@@ -21,7 +22,17 @@ function Book() {
     addBookToCart(book.bookID)
     sessionStorage.setItem("cartItems", JSON.stringify(currentCart));
   };
-
+  const handleAuthorClick = (authorID, event) => {
+    event.preventDefault();
+    const booksByAuthor = books.filter(book => book.authorID === authorID);
+    setFilteredBooks(booksByAuthor);
+  };
+  const handleGenreClick = (genreID, event) => {
+    event.preventDefault();
+    const booksByGenre = books.filter(book => book.genreID === genreID);
+    setFilteredBooks(booksByGenre);
+  };
+  console.log(filteredBooks);
   useEffect(() => {
     const fetchApi = async () => {
       try {
@@ -39,6 +50,7 @@ function Book() {
         }));
 
         setBooks(enrichedBooks);
+        setFilteredBooks(enrichedBooks);
         setAuthors(authorsData);
         setGenres(genresData);
       } catch (error) {
@@ -48,26 +60,26 @@ function Book() {
     };
 
     fetchApi();
-  }, [books]);
+  }, [books, authors, genres]);
 
   return (
     <Container fluid className="book-container">
       <Row>
         <Col md={3} className="sidebar-authors">
           <h4 className="sidebar-title">Authors</h4>
-          <ListGroup>
+          <ListGroup >
             {authors.map(author => (
-              <ListGroup.Item action key={author.authorID}>
-                {author.authorName}
-              </ListGroup.Item>
+             <ListGroup.Item action key={author.authorID} className="list-group-item" onClick={(event) => handleAuthorClick(author.authorID, event)}>
+             {author.authorName}
+           </ListGroup.Item>
             ))}
           </ListGroup>
           <h4 className="sidebar-title">Genres</h4>
-          <ListGroup>
+          <ListGroup >
             {genres.map(genre => (
-              <ListGroup.Item action key={genre.genreID}>
-                {genre.genreName}
-              </ListGroup.Item>
+              <ListGroup.Item action key={genre.genreID} className="list-group-item" onClick={(event) => handleGenreClick(genre.genreID, event)}>
+              {genre.genreName}
+            </ListGroup.Item>
             ))}
           </ListGroup>
         </Col>
@@ -75,7 +87,7 @@ function Book() {
         <Col md={9} className="featured-books">
           <h2>Featured Books</h2>
           <Row xs={1} md={2} lg={3} className="g-4">
-            {books.map(book => (
+            {filteredBooks.map(book => (
               <Col key={book.bookID}>
                 <Card>
                   <Card.Img
