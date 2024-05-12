@@ -7,12 +7,14 @@ import {
   getBooks,
   getGenres,
 } from "../../services/bookService";
+import { jwtDecode } from "jwt-decode";
+
 import { Table, Button, Modal, Form, Container } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
 function ManageBooks() {
-  const user = JSON.parse(sessionStorage.getItem("user"))
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [authors, setAuthors] = useState([]);
@@ -28,16 +30,25 @@ function ManageBooks() {
     totalQuantity: "",
     image: "",
   });
+  const token = sessionStorage.getItem("token");
+
 
   useEffect(() => {
-    if(!user) {
-      navigate("/login")
-      console.log(user.role);
-      
-    }
-    if(user.role !== "admin"){
-      navigate("/")
-    }
+    try {
+      const decodedUser =  jwtDecode(token);
+      if (decodedUser.role !== "admin") {
+        navigate("/");  // Redirect non-admin users to the homepage
+        return;
+      }
+      setUser(decodedUser); 
+      if (!token || !decodedUser) {
+          console.error("No token or failed to decode token");
+          navigate("/login");
+        }
+        
+  } catch (e) {
+    console.error(e);
+  }
     // console.log(user.role);
     
     const fetchBooks = async () => {

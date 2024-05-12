@@ -3,9 +3,11 @@ import { Table, Button, Modal, Form, Container } from "react-bootstrap";
 import Swal from 'sweetalert2';
 import { createGenre, deleteGenre, editGenre, getGenres } from "../../services/bookService";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function ManageGenres() {
-  const user = JSON.parse(sessionStorage.getItem("user"))
+  const [user, setUser] = useState(null);
+  const token = sessionStorage.getItem("token");
   const navigate = useNavigate();
   const [genres, setGenres] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -13,14 +15,21 @@ function ManageGenres() {
   const [currentGenre, setCurrentGenre] = useState({ genreID: "", genreName: "" });
 
   useEffect(() => {
-    if(!user) {
-      navigate("/login")
-      console.log(user.role);
-      
-    }
-    if(user.role !== "admin"){
-      navigate("/")
-    }
+    try {
+      const decodedUser =  jwtDecode(token);
+      if (decodedUser.role !== "admin") {
+        navigate("/");  // Redirect non-admin users to the homepage
+        return;
+      }
+      setUser(decodedUser); 
+      if (!token || !decodedUser) {
+          console.error("No token or failed to decode token");
+          navigate("/login");
+        }
+        
+  } catch (e) {
+    console.error(e);
+  }
     const fetchApi = async () => {
       const genresData = await getGenres();
       setGenres(genresData);

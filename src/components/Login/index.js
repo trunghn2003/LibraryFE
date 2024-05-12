@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Container, Tabs, Tab, Form, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from '../../reducers/user';
+import { login } from '../../reducers/user'; // Assuming you have a register action in your user reducer
 import { useNavigate } from 'react-router-dom';
+import './login.css';
+import { register } from '../../services/user';
 export function loadUserFromStorage() {
   const userData = sessionStorage.getItem('user');
   if (userData) {
@@ -10,6 +12,7 @@ export function loadUserFromStorage() {
   }
   return null;
 }
+
 function LoginForm({ userType }) {
   const dispatch = useDispatch();
   const [username, setUsername] = useState('');
@@ -20,25 +23,19 @@ function LoginForm({ userType }) {
   const handleLogin = (e) => {
     e.preventDefault();
     if (username && password) {
-      // console.log(username, password, userType)
       dispatch(login({ username, password, type: userType }));
     } else {
       alert('Please fill in all fields.');
     }
   }
-  // const userData = loadUserFromStorage();
-  // const { user } = useSelector(state => state.userReducer);
-  const user = sessionStorage.getItem("user")
-  useEffect(() => {
-    if (user) {
-      navigate('/'); // Chuyển hướng người dùng đến trang home
-    }
-  }, [user, navigate]);
-  
 
+  const token = sessionStorage.getItem("token")
+  if (token) {
+    navigate('/');
+  }
 
   return (
-    <Form onSubmit={handleLogin}>
+    <Form className="login-form" onSubmit={handleLogin}>
       <Form.Group className="mb-3" controlId={`formBasicUsername-${userType}`}>
         <Form.Label>Username</Form.Label>
         <Form.Control
@@ -69,6 +66,70 @@ function LoginForm({ userType }) {
   );
 }
 
+function RegistrationForm() {
+  const [registerUsername, setRegisterUsername] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [registerConfirmPassword, setRegisterConfirmPassword] = useState('');
+  const [registerError, setRegisterError] = useState('');
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (registerPassword !== registerConfirmPassword) {
+      setRegisterError('Passwords do not match');
+      return;
+    }
+
+    try {
+      const data = { username: registerUsername, password: registerPassword }
+      register(data);
+    } catch (error) {
+      setRegisterError(error.message);
+    }
+  }
+
+  return (
+    <Form className="registration-form" onSubmit={handleRegister}>
+      <Form.Group className="mb-3" controlId="formBasicRegisterUsername">
+        <Form.Label>Username</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter username"
+          value={registerUsername}
+          onChange={(e) => setRegisterUsername(e.target.value)}
+          required
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formBasicRegisterPassword">
+        <Form.Label>Password</Form.Label>
+        <Form.Control
+          type="password"
+          placeholder="Password"
+          value={registerPassword}
+          onChange={(e) => setRegisterPassword(e.target.value)}
+          required
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formBasicRegisterConfirmPassword">
+        <Form.Label>Confirm Password</Form.Label>
+        <Form.Control
+          type="password"
+          placeholder="Confirm Password"
+          value={registerConfirmPassword}
+          onChange={(e) => setRegisterConfirmPassword(e.target.value)}
+          required
+        />
+      </Form.Group>
+
+      <Button variant="primary" type="submit">
+        Register
+      </Button>
+      {registerError && <div className="alert alert-danger mt-3">{registerError}</div>}
+    </Form>
+  );
+}
+
 function Login() {
   return (
     <Container>
@@ -80,7 +141,7 @@ function Login() {
           <LoginForm userType="admin" />
         </Tab>
         <Tab eventKey="register" title="Register">
-          {/* Registration form here */}
+          <RegistrationForm />
         </Tab>
       </Tabs>
     </Container>

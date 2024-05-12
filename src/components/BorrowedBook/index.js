@@ -9,12 +9,15 @@ import {
 import { format, parseISO } from "date-fns";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function BorrowedBooks() {
   const [borrowings, setBorrowings] = useState([]);
   const [books, setBooks] = useState([]);
   const navigate = useNavigate();
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const [user, setUser] = useState(null);
+  const token = sessionStorage.getItem("token");
+
 
   const formatDate = (dateString) => {
     const date = parseISO(dateString);
@@ -23,16 +26,27 @@ function BorrowedBooks() {
   console.log("book");
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
+    try {
+      const decodedUser = jwtDecode(token);
+      setUser(decodedUser); 
+      if (!token || !decodedUser) {
+          console.error("No token or failed to decode token");
+          navigate("/login");
+        }
+        
+  } catch (e) {
+    console.error(e);
+  }
+
+    
     const fetchBorrowings = async () => {
       const bookDetails = await getBooks();
       setBooks(bookDetails);
       let borrowingsData = [];
       if (user) {
-        borrowingsData = await getBorrowingsByUserId(user.userID);
+        borrowingsData = await getBorrowingsByUserId(user.UserID);
       }
+      if(borrowingsData.length !== 0) {
       borrowingsData = borrowingsData.sort((a, b) => {
         // Sort by status, "Đã trả" should come after "Chưa trả"
         if (a.status === "Đã trả" && b.status !== "Đã trả") {
@@ -42,6 +56,7 @@ function BorrowedBooks() {
         }
         return 0;
       });
+    }
       // Initialize borrowedBooks as an empty array
       const borrowingsWithBooks = await Promise.all(
         borrowingsData.map(async (borrowing) => ({

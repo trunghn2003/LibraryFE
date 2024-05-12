@@ -3,24 +3,39 @@ import { createAuthor, deleteAuthor, editAuthor, getAuthors } from "../../servic
 import { Table, Button, Modal, Form, Container } from "react-bootstrap";
 import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function ManageAuthors() {
   const navigate = useNavigate();
-  const user = JSON.parse(sessionStorage.getItem("user"))
+  const [user, setUser] = useState(null);
+  const token = sessionStorage.getItem("token");
+
   const [authors, setAuthors] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentAuthor, setCurrentAuthor] = useState({ authorID: "", authorName: "" });
 
   useEffect(() => {
-    if(!user) {
-      navigate("/login")
-      console.log(user.role);
-      
-    }
-    if(user.role !== "admin"){
-      navigate("/")
-    }
+    try {
+      const decodedUser =  jwtDecode(token);
+      if (decodedUser.role !== "admin") {
+        navigate("/");  // Redirect non-admin users to the homepage
+        return;
+      }
+      setUser(decodedUser); 
+      if (!token || !decodedUser) {
+          console.error("No token or failed to decode token");
+          navigate("/login");
+        }
+        
+  } catch (e) {
+    console.error(e);
+  }
+  
+    
+    // if(user?.role !== "admin"){
+    //   navigate("/")
+    // }
     const fetchApi = async () => {
       const authorsData = await getAuthors();
       setAuthors(authorsData);
@@ -68,7 +83,7 @@ function ManageAuthors() {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        createAuthor({authorName:currentAuthor});
+        createAuthor({authorName:currentAuthor.authorName});
         setShowAddModal(false);
         Swal.fire('Saved!', 'The author has been added.', 'success');
       }

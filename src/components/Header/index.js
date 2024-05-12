@@ -1,50 +1,79 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Dropdown from "react-bootstrap/Dropdown";
-import "./header.css"; // Import your custom styles here
+import {jwtDecode} from 'jwt-decode'; // Sửa lỗi nhập khẩu
+import "./header.css";
 import { LOG_OUT } from "../../actions/user";
+
 function Header() {
-  const userDataString = sessionStorage.getItem("user");
-  const userData = userDataString ? JSON.parse(userDataString) : null;
-
-  let isAdmin = false;
-  if (userData && userData.role === "admin") {
-    isAdmin = true;
-  }
-
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        setUserData(decodedToken);
+        setIsAdmin(decodedToken['role'] === "admin");
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        sessionStorage.removeItem("token"); // Nếu token không hợp lệ, xóa bỏ nó
+        navigate("/login");
+      }
+    }
+
+    // Đăng ký một sự kiện để xử lý re-login từ các tab khác
+    const handleStorageChange = (event) => {
+      if (event.key === 'token') {
+        if (event.newValue) {
+          const decodedToken = jwtDecode(event.newValue);
+          setUserData(decodedToken);
+          setIsAdmin(decodedToken['role'] === "admin");
+        } else {
+          setUserData(null);
+          setIsAdmin(false);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [navigate]);
+
   const handleLogout = () => {
     dispatch({ type: LOG_OUT });
-    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    setUserData(null);
+    setIsAdmin(false);
     navigate("/");
   };
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="/">Thư viện</Navbar.Brand>
+        <Navbar.Brand href="/">Library</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/">Trang chủ</Nav.Link>
-            <Nav.Link href="/book">Sách</Nav.Link>
+            <Nav.Link href="/">Home</Nav.Link>
+            <Nav.Link href="/book">Book</Nav.Link>
             {userData ? (
               <>
-                <Nav.Link href="/cart">Giỏ hàng</Nav.Link>
-                <Nav.Link href="/borrowed-books">Sách đã mượn</Nav.Link>
-
+                <Nav.Link href="/cart">Cart</Nav.Link>
+                <Nav.Link href="/borrowed-books">Borrowed Book</Nav.Link>
                 {isAdmin && (
                   <>
-                    <Nav.Link href="/manage-books">Quản lý sách</Nav.Link>
-                    <Nav.Link href="/manage-authors">Quản lý tác giả</Nav.Link>
-                    <Nav.Link href="/manage-genres">Quản lý thể loại</Nav.Link>
-                    <Nav.Link href="/borrowing">Phê duyệt</Nav.Link>
+                    <Nav.Link href="/manage-books">Manage Books</Nav.Link>
+                    <Nav.Link href="/manage-authors">Manage Authors</Nav.Link>
+                    <Nav.Link href="/manage-genres">Manage Genres</Nav.Link>
+                    <Nav.Link href="/borrowing">Approve Borrowing</Nav.Link>
                   </>
                 )}
               </>
@@ -53,16 +82,14 @@ function Header() {
             )}
           </Nav>
           {userData && (
-            <Dropdown alignRight>
+            <Dropdown align="end">
               <Dropdown.Toggle variant="success" id="dropdown-basic" className="avatar-dropdown">
-                {/* Insert your avatar URL in the `src` or use a placeholder image */}
                 <img
-                  src="https://scontent.fhan18-1.fna.fbcdn.net/v/t39.30808-1/428701436_717986803780062_2419375325661557827_n.jpg?stp=cp6_dst-jpg_p200x200&_nc_cat=101&ccb=1-7&_nc_sid=5f2048&_nc_ohc=Q3TWP4pRNmkQ7kNvgGVMUj1&_nc_ht=scontent.fhan18-1.fna&oh=00_AfBKAztmC4FyXJs3ILBaXvkqmccXBbS4v8cHsw3AUlKAiw&oe=66391F91" // Example avatar image
+                  src={require("../../images/avatar.jpg")}
                   alt="avatar"
                   className="rounded-circle avatar-img"
                 />
               </Dropdown.Toggle>
-
               <Dropdown.Menu>
                 <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
               </Dropdown.Menu>

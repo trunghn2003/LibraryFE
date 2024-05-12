@@ -50,7 +50,7 @@
 }
 
 .featured-books .book-image {
-  height: 200px;
+  height: 300px;
   object-fit: cover;
 }
 
@@ -58,4 +58,68 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+.book-image {
+  max-width: 100%;  /* This will ensure that the image does not exceed the width of its container */
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  margin: auto;
+}
+
+.sidebar-authors {
+  background-color: #f8f9fa; /* Change the background color */
+  padding: 20px;
+}
+
+.sidebar-title {
+  font-size: 1.5em; /* Increase the font size */
+  margin-bottom: 20px;
+}
+
+.ListGroup.Item {
+  margin-bottom: 10px; /* Add some margin to the bottom */
+  cursor: pointer; /* Change the cursor when hovering over the item */
+}
+
+.featured-books {
+  padding: 20px; /* Add some padding */
+}
+
+.featured-books h2 {
+  margin-bottom: 20px; /* Add some margin to the bottom */
+}
+
+.book-image {
+  max-width: 100%; /* Ensure the image does not exceed the width of its container */
+  height: 200px;
+  object-fit: cover; /* Ensure the image covers the whole area without distortion */
+  display: block;
+  margin: auto; /* Center the image */
+}
+
+.list-group-item:hover {
+  background-color: #105193; /* Change to the color you want when hovering */
+}
+
+.sidebar-authors {
+  background-color: #f0f0f0; /* Light grey background */
+  color: #333; /* Dark grey text */
+}
+
+.sidebar-title {
+  color: #007bff; /* Blue text */
+}
+
+.list-group-item {
+  color: #333; /* Dark grey text */
+}
+
+.list-group-item:hover {
+  background-color: #e9ecef; /* Lighter grey background when hovered */
+  color: #007bff; /* Blue text when hovered */
+}
+
+.featured-books {
+  color: #333; /* Dark grey text */
 }
