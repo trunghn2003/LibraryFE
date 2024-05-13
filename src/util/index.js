@@ -1,5 +1,5 @@
 const API_DOMAIN = "https://localhost:44305/api";
-
+const token = sessionStorage.getItem("token");
 export const get = async (path) => {
     try {
         const response = await fetch(`${API_DOMAIN}/${path}`);
@@ -17,12 +17,16 @@ export const post = async (data, path) => {
     try {
         const response = await fetch(`${API_DOMAIN}/${path}`, {
             method: "POST",
+            
+
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify(data)
         });
+        console.log(token);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -39,7 +43,9 @@ export const put = async (path, data) => {
             method: "PUT",
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+
             },
             body: JSON.stringify(data)
         });
@@ -60,7 +66,9 @@ export const deleteRequest = async (path) => {
             method: "DELETE",
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+
             }
         });
         if (!response.ok) {
