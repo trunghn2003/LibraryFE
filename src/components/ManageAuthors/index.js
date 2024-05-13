@@ -31,11 +31,6 @@ function ManageAuthors() {
   } catch (e) {
     console.error(e);
   }
-  
-    
-    // if(user?.role !== "admin"){
-    //   navigate("/")
-    // }
     const fetchApi = async () => {
       const authorsData = await getAuthors();
       setAuthors(authorsData);
