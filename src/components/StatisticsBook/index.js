@@ -1,31 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
+import { statisticsBorrowedBook } from '../../services/bookService';
 
 const StatisticsBorrowedBook = () => {
-    // Assuming you have an array of borrowed books called 'borrowedBooks'
-    const borrowedBooks = [
-        { title: 'Book 1', borrowedDate: '2022-01-01' },
-        { title: 'Book 2', borrowedDate: '2022-02-01' },
-        { title: 'Book 3', borrowedDate: '2022-03-01' },
-        // ...
-    ];
+    
+    //
+    const [books, setBooks] = useState([]);
+    useEffect(() => {
+        const fetchApi = async () => {
+          try {
+            const booksData = await statisticsBorrowedBook();
+            setBooks(booksData);
+          } catch (error) {
+            console.error("Failed to fetch data:", error);
+            // Optionally handle the error by showing a user-friendly message or UI element
+          }
+        };
+    
+        fetchApi();
+      }, []);
+  
 
-    // Sort the borrowed books array in descending order based on the borrowed date
-    const sortedBooks = borrowedBooks.sort((a, b) => new Date(b.borrowedDate) - new Date(a.borrowedDate));
-
+    
     return (
         <Table striped bordered>
             <thead>
                 <tr>
+                    <th>Id</th>
                     <th>Title</th>
-                    <th>Borrowed Date</th>
+                    <th>Count</th>
+                    <th>Author</th>
+                    <th>Genre</th>
                 </tr>
             </thead>
             <tbody>
-                {sortedBooks.map((book, index) => (
+                {books.map((book, index) => (
                     <tr key={index}>
-                        <td>{book.title}</td>
-                        <td>{book.borrowedDate}</td>
+                        <td>{book.bookId}</td>
+                        <td>{book.bookName}</td>
+                        <td>{book.borrowedCount}</td>
+                        <td>{book.authorName}</td>
+                        <td>{book.genreName}</td>
                     </tr>
                 ))}
             </tbody>

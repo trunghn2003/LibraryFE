@@ -151,3 +151,9 @@ export const confirmBorrowBook = async (borrowingId,data = null) => {
 
   return result;
 };
+
+// thong ke
+export const statisticsBorrowedBook  = async () => {
+  const result = await get("Staticstic");
+  return result;
+}

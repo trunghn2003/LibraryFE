@@ -74,6 +74,7 @@ function Header() {
                     <Nav.Link href="/manage-authors">Manage Authors</Nav.Link>
                     <Nav.Link href="/manage-genres">Manage Genres</Nav.Link>
                     <Nav.Link href="/borrowing">Approve Borrowing</Nav.Link>
+                    <Nav.Link href="/statistics">Statistics</Nav.Link>
                   </>
                 )}
               </>
