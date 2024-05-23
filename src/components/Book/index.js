@@ -6,49 +6,71 @@ import {
   getBooks,
   getGenres,
 } from "../../services/bookService";
+import { jwtDecode } from "jwt-decode";
 import "./book.css"; // Ensure the CSS file is correctly imported
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 function Book() {
+  const [user, setUser] = useState(null);
   const [books, setBooks] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [genres, setGenres] = useState([]);
   const [filteredBooks, setFilteredBooks] = useState([]);
+  const token = sessionStorage.getItem("token");
+  const navigate = useNavigate();
+
 
   // Hàm thêm sách vào giỏ hàng, sử dụng sessionStorage
   const addToCart = async (book) => {
-    toast.success("Sách đã được thêm vào giỏ hàng", {
-      position: "top-right",
-    });
+    try {
+      const decodedUser = jwtDecode(token);
+      setUser(decodedUser); 
+      if (!token || !decodedUser) {
+          console.error("No token or failed to decode token");
+          navigate("/login");
+        }
+      else {
+        toast.success("Sách đã được thêm vào giỏ hàng", {
+          position: "top-right",
+        });
+    
+        let currentCart = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+        currentCart.push(book);
+        console.log(book.bookID);
+        addBookToCart(book.bookID);
+        sessionStorage.setItem("cartItems", JSON.stringify(currentCart));
+        const booksData = await getBooks();
+        const authorsData = await getAuthors();
+        const genresData = await getGenres();
+    
+        const authorMap = new Map(
+          authorsData.map((author) => [author.authorID, author.authorName])
+        );
+        const genreMap = new Map(
+          genresData.map((genre) => [genre.genreID, genre.genreName])
+        );
+    
+        const enrichedBooks = booksData.map((b) => ({
+          ...b,
+          authorName: authorMap.get(b.authorID),
+          genreName: genreMap.get(b.genreID),
+          remainingQuantity:
+            b.bookID === book.bookID
+              ? b.remainingQuantity - 1
+              : b.remainingQuantity,
+        }));
+    
+        setBooks(enrichedBooks);
+        setFilteredBooks(enrichedBooks);
 
-    let currentCart = JSON.parse(sessionStorage.getItem("cartItems")) || [];
-    currentCart.push(book);
-    console.log(book.bookID);
-    addBookToCart(book.bookID);
-    sessionStorage.setItem("cartItems", JSON.stringify(currentCart));
-    const booksData = await getBooks();
-    const authorsData = await getAuthors();
-    const genresData = await getGenres();
-
-    const authorMap = new Map(
-      authorsData.map((author) => [author.authorID, author.authorName])
-    );
-    const genreMap = new Map(
-      genresData.map((genre) => [genre.genreID, genre.genreName])
-    );
-
-    const enrichedBooks = booksData.map((b) => ({
-      ...b,
-      authorName: authorMap.get(b.authorID),
-      genreName: genreMap.get(b.genreID),
-      remainingQuantity:
-        b.bookID === book.bookID
-          ? b.remainingQuantity - 1
-          : b.remainingQuantity,
-    }));
-
-    setBooks(enrichedBooks);
-    setFilteredBooks(enrichedBooks);
+      } 
+        
+  } catch (e) {
+    console.error(e);
+    navigate("/login")
+  }
+    
   };
   const handleAuthorClick = (authorID, event) => {
     event.preventDefault();
